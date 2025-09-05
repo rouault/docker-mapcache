@@ -1,19 +1,19 @@
-FROM debian:buster as builder
+FROM debian:trixie as builder
 MAINTAINER Camptocamp "info@camptocamp.com"
 
-ENV MAPCACHE_VERSION=master
+ENV MAPCACHE_VERSION=main
 
 RUN apt-get update && \
     apt-get install --assume-yes --no-install-recommends ca-certificates git cmake build-essential \
-        liblz-dev libpng-dev libgdal-dev libgeos-dev libpixman-1-dev libsqlite0-dev libcurl4-openssl-dev \
-        libaprutil1-dev libapr1-dev libjpeg-dev libdpkg-dev libdb5.3-dev libtiff5-dev libpcre3-dev \
+        liblz-dev libpng-dev libgdal-dev libgeos-dev libpixman-1-dev libsqlite3-dev libcurl4-openssl-dev \
+        libaprutil1-dev libapr1-dev libjpeg-dev libdpkg-dev libdb5.3-dev libtiff5-dev libpcre2-dev \
         apache2 apache2-dev postgresql-server-dev-all
 
 RUN mkdir /build && \
     mkdir /etc/mapcache && \
     ln --symbolic /etc/mapcache /mapcache && \
     cd /build && \
-    git clone https://github.com/mapserver/mapcache.git && \
+    git clone --branch=main https://github.com/mapserver/mapcache.git && \
     cd /build/mapcache && \
     git checkout ${MAPCACHE_VERSION} && \
     mkdir /build/mapcache/build && \
@@ -25,7 +25,7 @@ RUN mkdir /build && \
     cp /build/mapcache/mapcache.xml /mapcache/ && \
     rm -Rf /build
 
-FROM debian:buster as runner
+FROM debian:trixie as runner
 LABEL maintainer="info@camptocamp.com"
 
 ENV APACHE_CONFDIR=/etc/apache2 \
@@ -40,7 +40,7 @@ ENV APACHE_CONFDIR=/etc/apache2 \
 
 RUN apt-get update && \
     apt-get install --assume-yes --no-install-recommends ca-certificates \
-        libgdal20 libaprutil1 libapr1 libpixman-1-0 libdb5.3 libpcre3 \
+        libgdal36 libaprutil1 libapr1 libpixman-1-0 libdb5.3 libpcre2-8-0 \
         apache2 libpq5 && \
     apt-get clean && \
     rm --recursive --force /var/lib/apt/lists/partial/* /tmp/* /var/tmp/* && \
