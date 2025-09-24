@@ -7,7 +7,7 @@ RUN apt-get update && \
     apt-get install --assume-yes --no-install-recommends ca-certificates git cmake build-essential \
         liblz-dev libpng-dev libgdal-dev libgeos-dev libpixman-1-dev libsqlite3-dev libcurl4-openssl-dev \
         libaprutil1-dev libapr1-dev libjpeg-dev libdpkg-dev libdb5.3-dev libtiff5-dev libpcre2-dev \
-        apache2 apache2-dev postgresql-server-dev-all
+        apache2 apache2-dev postgresql-server-dev-all liblmdb-dev
 
 RUN mkdir /build && \
     mkdir /etc/mapcache && \
@@ -18,7 +18,7 @@ RUN mkdir /build && \
     git checkout ${MAPCACHE_VERSION} && \
     mkdir /build/mapcache/build && \
     cd /build/mapcache/build && \
-    cmake -DCMAKE_BUILD_TYPE=Release -DWITH_MEMCACHE=1 -DWITH_FCGI=0 -DWITH_CGI=0 -DWITH_POSTGRESQL=1 .. && \
+    cmake -DCMAKE_BUILD_TYPE=Release -DWITH_MEMCACHE=1 -DWITH_LMDB=1 -DWITH_FCGI=0 -DWITH_CGI=0 -DWITH_POSTGRESQL=1 .. && \
     make && \
     make install && \
     ldconfig && \
@@ -41,7 +41,7 @@ ENV APACHE_CONFDIR=/etc/apache2 \
 RUN apt-get update && \
     apt-get install --assume-yes --no-install-recommends ca-certificates \
         libgdal36 libaprutil1 libapr1 libpixman-1-0 libdb5.3 libpcre2-8-0 \
-        apache2 libpq5 && \
+        apache2 libpq5 liblmdb0 memcached && \
     apt-get clean && \
     rm --recursive --force /var/lib/apt/lists/partial/* /tmp/* /var/tmp/* && \
     adduser www-data root && \
